@@ -1,6 +1,7 @@
 import axios from "axios";
 import { NextPage } from "next";
-import { Fragment, Dispatch, SetStateAction } from "react"
+import { Fragment, Dispatch, SetStateAction, useState } from "react"
+import { Loading } from "./loading";
 
 interface ExcludesModalProps {
   openExcludesModal: boolean 
@@ -13,17 +14,24 @@ export const ExcludesModal: NextPage<ExcludesModalProps> = ({
   setOpenExcludesModal,
   studentId
 }) => {
+  const [loading, setLoading] = useState<boolean>(false);
+
   const handleExcludesStudent = (id: string) => {
+    setLoading((prevState) => (prevState = true));
+
     axios.delete("http://localhost:4000/students/" + id).then(() => {
       setOpenExcludesModal((prevState) => (prevState = false))
+      setLoading((prevState) => (prevState = false));
     })
   }
 
   return (
     <Fragment>
+      <Loading loading={loading} />
+
       {openExcludesModal === true ? (
-        <main className="antialiased bg-gray-200 text-gray-900 font-sans overflow-x-hidden">
-          <div className="relative px-4 min-h-screen md:flex md:items-center md:justify-center">
+        <main className="h-screen w-screen absolute bg-gray-200 text-gray-900 font-sans overflow-x-hidden">
+          <div className="px-4 min-h-screen md:flex md:items-center md:justify-center">
             <div className="bg-black opacity-25 w-full h-full absolute z-10 inset-0"></div>
             <div className="bg-white rounded-lg md:max-w-md md:mx-auto p-4 fixed inset-x-0 bottom-0 z-50 mb-4 mx-4 md:relative">
               <div className="md:flex items-center">

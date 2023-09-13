@@ -1,6 +1,7 @@
 "use client";
 
 import { AddStudentModal, AddCourseModal } from "@/components";
+import { Loading } from "@/components/loading";
 import { Table } from "@/components/table";
 import { hubxp } from "@/images";
 import Image from "next/image";
@@ -31,7 +32,7 @@ export default function Home() {
         setOpenAddCourseModal={setOpenAddCourseModal}
       />
 
-      <header className="flex justify-between bg-black">
+      <header className="flex justify-between bg-black_500">
         <Image src={hubxp} height={100} width={100} alt="Logo do HUB XP" />
       </header>
 
@@ -53,7 +54,7 @@ export default function Home() {
 
       <Table />
 
-      <footer className="bg-black p-10">
+      <footer className="bg-black_500 p-10">
         <p className="text-white">Desenvolvido por Luiz Lima</p>
       </footer>
     </div>

@@ -1,6 +1,7 @@
 import type { NextPage } from "next";
 import { Dispatch, SetStateAction, Fragment, useState } from "react";
 import axios from "axios";
+import { Loading } from "./loading";
 
 interface AddCourseModalProps {
   openAddCourseModal: boolean;
@@ -17,22 +18,30 @@ export const AddCourseModal: NextPage<AddCourseModalProps> = ({
   setOpenAddCourseModal,
 }) => {
   const [course, setCourse] = useState<Course>({ id: "", name: "" });
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleCancelAddCourseModal = (): void => {
     setOpenAddCourseModal((prevState) => (prevState = false));
   };
 
   const handleSubmitAddCouseModal = async () => {
+    setLoading((prevState) => (prevState = true));
+
+    delete course.id
+
     return await axios.post("http://localhost:4000/courses", course).then(() => {
       setOpenAddCourseModal((prevState) => (prevState = false));
+      setLoading((prevState) => (prevState = false));
     });
   };
 
   return (
     <Fragment>
+      <Loading loading={loading} />
+
       {openAddCourseModal === true ? (
-        <main className="antialiased bg-gray-200 text-gray-900 font-sans overflow-x-hidden">
-          <div className="relative px-4 min-h-screen md:flex md:items-center md:justify-center">
+        <main className="h-screen w-screen absolute bg-gray-200 text-gray-900 font-sans overflow-x-hidden">
+          <div className="px-4 min-h-screen md:flex md:items-center md:justify-center">
             <div className="bg-white rounded-lg md:max-w-md md:mx-auto p-4 fixed inset-x-0 bottom-0 z-50 mb-4 mx-4 md:relative">
               <div className="md:flex items-center">
                 <div className="mt-4 md:mt-0 text-center md:text-left">

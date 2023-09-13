@@ -3,6 +3,7 @@
 import { NextPage } from "next";
 import { Dispatch, SetStateAction, Fragment, useState, useEffect } from "react";
 import axios from "axios";
+import { Loading } from "./loading";
 
 interface AddStudentModalProps {
   openEditStudentModal: boolean;
@@ -25,7 +26,7 @@ interface Courses {
 export const EditStudentModal: NextPage<AddStudentModalProps> = ({
   openEditStudentModal,
   setOpenEditStudentModal,
-  student
+  student,
 }) => {
   const [editStudent, setEditStudent] = useState<Students>({
     email: "",
@@ -35,6 +36,7 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
   });
 
   const [courses, setCourses] = useState<Courses[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     setEditStudent((prevState) => (prevState = student));
@@ -42,39 +44,47 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
 
   useEffect(() => {
     (async function () {
+      setLoading((prevState) => (prevState = true));
+
       axios.get("http://localhost:4000/courses").then((response) => {
         setCourses((prevState) => (prevState = response.data));
+        setLoading((prevState) => (prevState = false));
       });
     })();
   }, []);
-  
+
   const handleCancelAddStudentModal = (): void => {
     setOpenEditStudentModal((prevState) => (prevState = false));
   };
 
-  const handleSubmitAddStudentModal = async (id: string): Promise<void> => {  
+  const handleSubmitAddStudentModal = async (id: string): Promise<void> => {
+    setLoading((prevState) => (prevState = true));
+    
     const response: Students = {
       name: student?.name,
       email: student?.email,
-      course: student?.course
-    }
+      course: student?.course,
+    };
 
     return await axios
       .put("http://localhost:4000/students/" + id, response)
       .then(() => {
         setOpenEditStudentModal((prevState) => (prevState = false));
+        setLoading((prevState) => (prevState = false));
       });
   };
 
   return (
     <Fragment>
+      <Loading loading={loading} />
+
       {openEditStudentModal === true ? (
-        <main className="antialiased bg-gray-200 text-gray-900 font-sans overflow-x-hidden">
-          <div className="relative px-4 min-h-screen md:flex md:items-center md:justify-center">
+        <main className="h-screen w-screen absolute bg-gray-200 text-gray-900 font-sans overflow-x-hidden">
+          <div className="px-4 min-h-screen md:flex md:items-center md:justify-center">
             <div className="bg-white rounded-lg md:max-w-md md:mx-auto p-4 fixed inset-x-0 bottom-0 z-50 mb-4 mx-4 md:relative">
               <div className="md:flex items-center">
                 <div className="mt-4 md:mt-0 text-center md:text-left">
-                  <p className="font-bold my-5">Adicionar aluno</p>
+                  <p className="font-bold my-5">Editar aluno</p>
 
                   <div className="flex flex-col">
                     <label>Nome</label>
@@ -114,7 +124,11 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
 
                   <div className="flex flex-col">
                     <label>Curso</label>
-                    <select value="" defaultValue="" className="rounded-md shadow-sm p-2 bg-green-400">
+                    <select
+                      value=""
+                      defaultValue=""
+                      className="rounded-md shadow-sm p-2 bg-green-400"
+                    >
                       <option selected value="">
                         Selecione
                       </option>
@@ -129,7 +143,9 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
               </div>
               <div className="text-center md:text-right mt-4 md:flex md:justify-end">
                 <button
-                  onClick={() => handleSubmitAddStudentModal(String(student.id))}
+                  onClick={() =>
+                    handleSubmitAddStudentModal(String(student.id))
+                  }
                   className="block w-full md:inline-block md:w-auto px-4 py-3 md:py-2 bg-green-500 text-white rounded-lg font-semibold text-sm md:ml-2 md:order-2"
                 >
                   Salvar

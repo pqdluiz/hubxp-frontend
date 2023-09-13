@@ -5,6 +5,7 @@ import { useState, useEffect, Fragment } from "react";
 import axios, { AxiosResponse } from "axios";
 import { BsFillTrash3Fill, BsFillPencilFill } from "react-icons/bs";
 import { EditStudentModal, ExcludesModal } from ".";
+import { Loading } from "./loading";
 
 interface Students {
   name: string;
@@ -18,6 +19,7 @@ export const Table: NextPage = () => {
   const [openExcludesModal, setOpenExcludesModal] = useState<boolean>(false);
   const [openEditModal, setOpenEditModal] = useState<boolean>(false);
   const [studentId, setStudentId] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const [editStudent, setEditStudent] = useState<Students>({
     email: "",
     id: "",
@@ -27,10 +29,13 @@ export const Table: NextPage = () => {
 
   useEffect(() => {
     (async function () {
-      axios
+      setLoading((prevState) => (prevState = true));
+
+      await axios
         .get("http://localhost:4000/students")
         .then((response: AxiosResponse<Students[]>) => {
           setStudents((prevState) => (prevState = response.data));
+          setLoading((prevState) => (prevState = false));
         });
     })();
   }, []);
@@ -42,15 +47,17 @@ export const Table: NextPage = () => {
 
   const handleEditStudent = async (student: Students) => {
     setEditStudent((prevState) => (prevState = student));
+    setLoading(prevState => prevState = true)
 
     await axios
       .get("http://localhost:4000/students/" + student?.id)
       .then((response) => {
         setEditStudent((prevState) => (prevState = response.data));
+        setLoading((prevState) => (prevState = false));
       });
 
     setOpenEditModal((prevState) => (prevState = true));
-  }
+  };
 
   return (
     <Fragment>
@@ -65,6 +72,8 @@ export const Table: NextPage = () => {
         setOpenEditStudentModal={setOpenEditModal}
         student={editStudent}
       />
+
+      <Loading loading={loading} />
 
       <section className="flex mx-5 my-10 justify-evenly shadow-md p-10">
         <div className="flex flex-col">
