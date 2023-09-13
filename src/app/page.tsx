@@ -7,7 +7,8 @@ import Image from "next/image";
 import { useState } from "react";
 
 export default function Home() {
-  const [openAddStudentModal, setOpenAddStudentModal] = useState<boolean>(false);
+  const [openAddStudentModal, setOpenAddStudentModal] =
+    useState<boolean>(false);
   const [openAddCourseModal, setOpenAddCourseModal] = useState<boolean>(false);
 
   const handleAddStudent = (): void => {
