@@ -2,6 +2,7 @@ import type { Course } from "@/interfaces";
 import axios from "axios";
 import { useState, Dispatch, SetStateAction } from "react";
 import type { AddCourseModalViewProps } from "./add-course-modal-view";
+import { CourseService } from "@/services";
 
 export function useAddCourseModal(): AddCourseModalViewProps {
   const [course, setCourse] = useState<Course>({ id: "", name: "" });
@@ -17,10 +18,12 @@ export function useAddCourseModal(): AddCourseModalViewProps {
     setOpenAddCourseModal: Dispatch<SetStateAction<boolean>>
   ): Promise<void> => {
     setLoading((prevState) => (prevState = true));
+    
+    const courseService = new CourseService()
 
     delete course.id;
 
-    await axios.post("http://localhost:4000/courses", course).then(() => {
+    await courseService.createCourse(course).then(() => {
       setOpenAddCourseModal((prevState) => (prevState = false));
       setLoading((prevState) => (prevState = false));
     });

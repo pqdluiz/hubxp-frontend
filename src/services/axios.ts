@@ -1,7 +1,5 @@
 import axios from "axios";
 
 export const api = axios.create({
-  baseURL: process.env.DATABASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_DATABASE_URL,
 });
-
-console.log(api.getUri())

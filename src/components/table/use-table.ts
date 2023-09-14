@@ -1,7 +1,8 @@
 import type { Students } from "@/interfaces";
-import axios, { AxiosResponse } from "axios";
+import type { AxiosResponse } from "axios";
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import type { TableViewProps } from "./table-view";
+import { StudentsService } from "@/services";
 
 export function useTable(
   setStudents: Dispatch<SetStateAction<Students[]>>
@@ -12,8 +13,10 @@ export function useTable(
     (async function () {
       setLoading((prevState) => (prevState = true));
 
-      await axios
-        .get("http://localhost:4000/students")
+      const studentService = new StudentsService();
+
+      await studentService
+        .findAllStudents()
         .then((response: AxiosResponse<Students[]>) => {
           setStudents((prevState) => (prevState = response.data));
           setLoading((prevState) => (prevState = false));
@@ -38,8 +41,10 @@ export function useTable(
     setEditStudent((prevState) => (prevState = student));
     setLoading((prevState) => (prevState = true));
 
-    await axios
-      .get("http://localhost:4000/students/" + student?.id)
+    const studentService = new StudentsService();
+
+    await studentService
+      .findOneStudentById(String(student?.id))
       .then((response) => {
         setEditStudent((prevState) => (prevState = response.data));
         setLoading((prevState) => (prevState = false));

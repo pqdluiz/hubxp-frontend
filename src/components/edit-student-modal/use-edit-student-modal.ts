@@ -1,5 +1,5 @@
 import type { Course, Students } from "@/interfaces";
-import axios, { AxiosResponse } from "axios";
+import type { AxiosResponse } from "axios";
 import {
   useState,
   useEffect,
@@ -8,6 +8,7 @@ import {
   SetStateAction,
 } from "react";
 import type { EditStudentModalViewProps } from "./edit-student-modal-view";
+import { CourseService, StudentsService } from "@/services";
 
 export function useEditStudentModal(
   student: Students
@@ -21,14 +22,18 @@ export function useEditStudentModal(
   }, [student]);
 
   useEffect(() => {
-    if (student?.id) {
-      axios
-        .get("http://localhost:4000/students/" + student?.id)
-        .then((response) => {
-          setEditStudent((prevState) => (prevState = response.data));
-          setLoading((prevState) => (prevState = false));
-        });
-    }
+    (async function () {
+      if (student?.id) {
+        const studentService = new StudentsService();
+
+        await studentService
+          .findOneStudentById(student?.id)
+          .then((response) => {
+            setEditStudent((prevState) => (prevState = response.data));
+            setLoading((prevState) => (prevState = false));
+          });
+      }
+    })();
   }, [student?.id]);
 
   useEffect(() => {
@@ -36,10 +41,14 @@ export function useEditStudentModal(
       setLoading((prevState) => (prevState = true));
       setEditStudent((prevState) => (prevState = student));
 
-      await axios.get("http://localhost:4000/courses").then((response) => {
-        setCourses((prevState) => (prevState = response.data));
-        setLoading((prevState) => (prevState = false));
-      });
+      const coursesService = new CourseService();
+
+      await coursesService
+        .findCourses()
+        .then((response: AxiosResponse<Course[]>) => {
+          setCourses((prevState) => (prevState = response.data));
+          setLoading((prevState) => (prevState = false));
+        });
     })();
   }, [student]);
 
@@ -49,8 +58,10 @@ export function useEditStudentModal(
     ): Promise<void> => {
       setLoading((prevState) => (prevState = true));
 
-      await axios
-        .get("http://localhost:4000/students")
+      const studentsService = new StudentsService();
+
+      await studentsService
+        .findAllStudents()
         .then((response: AxiosResponse<Students[]>) => {
           setStudents((prevState) => (prevState = response.data));
           setLoading((prevState) => (prevState = false));
@@ -72,20 +83,19 @@ export function useEditStudentModal(
   ): Promise<void> => {
     setLoading((prevState) => (prevState = true));
 
+    const studentsService = new StudentsService();
+
     const response: Students = {
       name: editStudent?.name,
       email: editStudent?.email,
       course: editStudent?.course,
     };
 
-    return await axios
-      .put("http://localhost:4000/students/" + id, response)
-      .then(() => {
-        setOpenEditStudentModal((prevState) => (prevState = false));
-        setLoading((prevState) => (prevState = false));
-
-        fetchStudents(setStudents);
-      });
+    return await studentsService.updateStudent(id, response).then(() => {
+      setOpenEditStudentModal((prevState) => (prevState = false));
+      setLoading((prevState) => (prevState = false));
+      fetchStudents(setStudents);
+    });
   };
 
   const handleChangeName = (

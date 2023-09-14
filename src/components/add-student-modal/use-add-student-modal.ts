@@ -1,5 +1,5 @@
 import type { Course, Students } from "@/interfaces";
-import axios, { AxiosResponse } from "axios";
+import type { AxiosResponse } from "axios";
 import {
   useState,
   useEffect,
@@ -8,6 +8,7 @@ import {
   SetStateAction,
 } from "react";
 import type { AddStudentModalViewProps } from "./add-student-view";
+import { CourseService, StudentsService } from "@/services";
 
 export function useAddStudentModal(): AddStudentModalViewProps {
   const [student, setStudent] = useState<Students>({
@@ -24,7 +25,9 @@ export function useAddStudentModal(): AddStudentModalViewProps {
     (async function () {
       setLoading((prevState) => (prevState = true));
 
-      await axios.get("http://localhost:4000/courses").then((response) => {
+      const courseService = new CourseService();
+
+      await courseService.findCourses().then((response) => {
         setCourses((prevState) => (prevState = response.data));
         setLoading((prevState) => (prevState = false));
       });
@@ -37,8 +40,10 @@ export function useAddStudentModal(): AddStudentModalViewProps {
     ): Promise<void> => {
       setLoading((prevState) => (prevState = true));
 
-      await axios
-        .get("http://localhost:4000/students")
+      const studentService = new StudentsService();
+
+      await studentService
+        .findAllStudents()
         .then((response: AxiosResponse<Students[]>) => {
           setStudents((prevState) => (prevState = response.data));
           setLoading((prevState) => (prevState = false));
@@ -59,19 +64,19 @@ export function useAddStudentModal(): AddStudentModalViewProps {
   ): Promise<void> => {
     setLoading((prevState) => (prevState = true));
 
+    const studentService = new StudentsService();
+
     const response: Students = {
       email: student?.email,
       name: student?.name,
       course: student?.course,
     };
 
-    return await axios
-      .post("http://localhost:4000/students", response)
-      .then(() => {
-        setOpenAddStudentModal((prevState) => (prevState = false));
-        setLoading((prevState) => (prevState = false));
-        fetchStudents(setStudents);
-      });
+    return await studentService.createStudent(response).then(() => {
+      setOpenAddStudentModal((prevState) => (prevState = false));
+      setLoading((prevState) => (prevState = false));
+      fetchStudents(setStudents);
+    });
   };
 
   const handleChangeName = (
