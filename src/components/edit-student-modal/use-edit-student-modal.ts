@@ -88,6 +88,33 @@ export function useEditStudentModal(
       });
   };
 
+  const handleChangeName = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    setEditStudent({
+      ...editStudent,
+      name: event.target.value,
+    });
+  };
+
+  const handleChangeEmail = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    setEditStudent({
+      ...editStudent,
+      email: event.target.value,
+    });
+  };
+
+  const handleChangeCourse = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ): void => {
+    setEditStudent({
+      ...editStudent,
+      course: event.target.value,
+    });
+  };
+
   return {
     handleSubmitAddStudentModal,
     handleCancelAddStudentModal,
@@ -95,5 +122,8 @@ export function useEditStudentModal(
     courses,
     setEditStudent,
     editStudent,
+    handleChangeCourse,
+    handleChangeEmail,
+    handleChangeName,
   };
 }

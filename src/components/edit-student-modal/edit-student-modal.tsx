@@ -1,6 +1,6 @@
 "use client";
 
-import { NextPage } from "next";
+import type { NextPage } from "next";
 import { Dispatch, SetStateAction, Fragment } from "react";
 import { Loading } from "../loading";
 import type { Students } from "@/interfaces";
@@ -26,6 +26,9 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
     loading,
     setEditStudent,
     editStudent,
+    handleChangeCourse,
+    handleChangeEmail,
+    handleChangeName,
   } = useEditStudentModal(student);
 
   return (
@@ -44,12 +47,7 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
                     <label>Nome</label>
                     <input
                       value={editStudent?.name}
-                      onChange={(event) =>
-                        setEditStudent({
-                          ...editStudent,
-                          name: event.target.value,
-                        })
-                      }
+                      onChange={handleChangeName}
                       className="rounded-md shadow-sm p-2 bg-green-400"
                     />
                   </div>
@@ -58,12 +56,7 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
                     <label>Email</label>
                     <input
                       value={editStudent?.email}
-                      onChange={(event) =>
-                        setEditStudent({
-                          ...editStudent,
-                          email: event.target.value,
-                        })
-                      }
+                      onChange={handleChangeEmail}
                       className="rounded-md shadow-sm p-2 bg-green-400"
                     />
                   </div>
@@ -73,15 +66,13 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
                     <select
                       defaultValue=""
                       className="rounded-md shadow-sm p-2 bg-green-400"
-                      onChange={(event) =>
-                        setEditStudent({
-                          ...editStudent,
-                          course: event.target.value,
-                        })
-                      }
+                      onChange={handleChangeCourse}
                     >
                       {courses?.map((course, index) => (
                         <Fragment key={index}>
+                          <option selected value={student?.course}>
+                            {student?.course}
+                          </option>
                           <option value={course?.name}>{course?.name}</option>
                         </Fragment>
                       ))}

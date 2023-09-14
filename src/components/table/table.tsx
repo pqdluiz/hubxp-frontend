@@ -1,13 +1,13 @@
 "use client";
 
 import type { NextPage } from "next";
-import { useState, useEffect, Fragment } from "react";
-import axios, { AxiosResponse } from "axios";
+import { Fragment } from "react";
 import { BsFillTrash3Fill, BsFillPencilFill } from "react-icons/bs";
-import { Loading } from "./loading";
+import { Loading } from "../loading";
 
 import type { Dispatch, SetStateAction } from "react";
 import type { Students } from "@/interfaces";
+import { useTable } from "./use-table";
 
 interface TableProps {
   students: Students[];
@@ -26,39 +26,8 @@ export const Table: NextPage<TableProps> = ({
   setEditStudent,
   setOpenEditModal,
 }) => {
-  const [loading, setLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    (async function () {
-      setLoading((prevState) => (prevState = true));
-
-      await axios
-        .get("http://localhost:4000/students")
-        .then((response: AxiosResponse<Students[]>) => {
-          setStudents((prevState) => (prevState = response.data));
-          setLoading((prevState) => (prevState = false));
-        });
-    })();
-  }, []);
-
-  const handleExcludesStudent = (id: string): void => {
-    setStudentId((prevState) => (prevState = id));
-    setOpenExcludesModal((prevState) => (prevState = true));
-  };
-
-  const handleEditStudent = async (student: Students) => {
-    setEditStudent((prevState) => (prevState = student));
-    setLoading((prevState) => (prevState = true));
-
-    await axios
-      .get("http://localhost:4000/students/" + student?.id)
-      .then((response) => {
-        setEditStudent((prevState) => (prevState = response.data));
-        setLoading((prevState) => (prevState = false));
-      });
-
-    setOpenEditModal((prevState) => (prevState = true));
-  };
+  const { handleEditStudent, handleExcludesStudent, loading } =
+    useTable(setStudents);
 
   return (
     <Fragment>
@@ -109,7 +78,11 @@ export const Table: NextPage<TableProps> = ({
                           <td className="whitespace-nowrap px-6 py-4 flex">
                             <div
                               onClick={() =>
-                                handleExcludesStudent(String(student.id))
+                                handleExcludesStudent(
+                                  String(student.id),
+                                  setStudentId,
+                                  setOpenExcludesModal
+                                )
                               }
                               className="cursor-pointer"
                             >
@@ -117,7 +90,13 @@ export const Table: NextPage<TableProps> = ({
                             </div>
 
                             <div
-                              onClick={() => handleEditStudent(student)}
+                              onClick={() =>
+                                handleEditStudent(
+                                  student,
+                                  setEditStudent,
+                                  setOpenEditModal
+                                )
+                              }
                               className="cursor-pointer mx-2"
                             >
                               <BsFillPencilFill />

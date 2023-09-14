@@ -1,14 +1,8 @@
-import axios, { AxiosResponse } from "axios";
-import { NextPage } from "next";
-import { Fragment, Dispatch, SetStateAction, useState, useCallback } from "react";
-import { Loading } from "./loading";
-
-interface Students {
-  name: string;
-  email: string;
-  id?: string;
-  course?: string;
-}
+import type { NextPage } from "next";
+import { Fragment, Dispatch, SetStateAction } from "react";
+import { Loading } from "../loading";
+import { Students } from "@/interfaces";
+import { useExcludesModal } from "./use-excludes-modal";
 
 interface ExcludesModalProps {
   openExcludesModal: boolean;
@@ -23,29 +17,7 @@ export const ExcludesModal: NextPage<ExcludesModalProps> = ({
   studentId,
   setStudents,
 }) => {
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const fetchStudents = useCallback(async (): Promise<void> => {
-    setLoading((prevState) => (prevState = true));
-
-    await axios
-      .get("http://localhost:4000/students")
-      .then((response: AxiosResponse<Students[]>) => {
-        setStudents((prevState) => (prevState = response.data));
-        setLoading((prevState) => (prevState = false));
-      });
-  }, [setStudents]);
-
-  const handleExcludesStudent = async (id: string): Promise<void> => {
-    setLoading((prevState) => (prevState = true));
-
-    await axios.delete("http://localhost:4000/students/" + id).then(() => {
-      setOpenExcludesModal((prevState) => (prevState = false));
-      setLoading((prevState) => (prevState = false));
-
-      fetchStudents()
-    });
-  };
+  const { handleExcludesStudent, loading } = useExcludesModal();
 
   return (
     <Fragment>
@@ -67,7 +39,13 @@ export const ExcludesModal: NextPage<ExcludesModalProps> = ({
               </div>
               <div className="text-center md:text-right mt-4 md:flex md:justify-end">
                 <button
-                  onClick={() => handleExcludesStudent(studentId)}
+                  onClick={() =>
+                    handleExcludesStudent(
+                      studentId,
+                      setStudents,
+                      setOpenExcludesModal
+                    )
+                  }
                   className="block w-full md:inline-block md:w-auto px-4 py-3 md:py-2 bg-red-200 text-red-700 rounded-lg font-semibold text-sm md:ml-2 md:order-2"
                 >
                   Deletar

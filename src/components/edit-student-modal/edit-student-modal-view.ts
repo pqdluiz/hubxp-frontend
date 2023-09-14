@@ -14,4 +14,7 @@ export interface EditStudentModalViewProps {
   courses: Course[];
   setEditStudent: Dispatch<SetStateAction<Students>>;
   editStudent: Students;
+  handleChangeName: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChangeEmail: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChangeCourse: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 }
