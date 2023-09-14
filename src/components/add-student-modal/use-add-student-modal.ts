@@ -7,23 +7,7 @@ import {
   Dispatch,
   SetStateAction,
 } from "react";
-
-interface AddStudentModalViewProps {
-  loading: boolean;
-  handleSubmitAddStudentModal: (
-    setOpenAddStudentModal: Dispatch<SetStateAction<boolean>>,
-    setStudents: Dispatch<SetStateAction<Students[]>>
-  ) => Promise<void>;
-  setStudent: Dispatch<SetStateAction<Students>>;
-  student: Students;
-  courses: Course[];
-  handleCancelAddStudentModal: (
-    setOpenAddStudentModal: Dispatch<SetStateAction<boolean>>
-  ) => void;
-  fetchStudents: (
-    setStudents: Dispatch<SetStateAction<Students[]>>
-  ) => Promise<void>;
-}
+import type { AddStudentModalViewProps } from "./add-student-view";
 
 export function useAddStudentModal(): AddStudentModalViewProps {
   const [student, setStudent] = useState<Students>({
@@ -97,6 +81,6 @@ export function useAddStudentModal(): AddStudentModalViewProps {
     setStudent,
     student,
     courses,
-    fetchStudents
+    fetchStudents,
   };
 }

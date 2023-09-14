@@ -11,6 +11,7 @@ import {
 } from "react";
 import axios, { AxiosResponse } from "axios";
 import { Loading } from "./loading";
+import { Course, Students } from "@/interfaces";
 
 interface AddStudentModalProps {
   openEditStudentModal: boolean;
@@ -19,48 +20,42 @@ interface AddStudentModalProps {
   setStudents: Dispatch<SetStateAction<Students[]>>;
 }
 
-interface Students {
-  name: string;
-  email: string;
-  id?: string;
-  course?: string;
-}
-
-interface Courses {
-  name: string;
-  id?: string;
-}
-
 export const EditStudentModal: NextPage<AddStudentModalProps> = ({
   openEditStudentModal,
   setOpenEditStudentModal,
   student,
   setStudents,
 }) => {
-  const [editStudent, setEditStudent] = useState<Students>({
-    email: "",
-    id: "",
-    name: "",
-    course: "",
-  });
-
-  const [courses, setCourses] = useState<Courses[]>([]);
+  const [editStudent, setEditStudent] = useState<Students>(student);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     setEditStudent((prevState) => (prevState = student));
-  }, []);
+  }, [student]);
+
+  useEffect(() => {
+    if (student?.id) {
+      axios
+        .get("http://localhost:4000/students/" + student?.id)
+        .then((response) => {
+          setEditStudent((prevState) => (prevState = response.data));
+          setLoading((prevState) => (prevState = false));
+        });
+    }
+  }, [student?.id]);
 
   useEffect(() => {
     (async function () {
       setLoading((prevState) => (prevState = true));
+      setEditStudent((prevState) => (prevState = student));
 
-      axios.get("http://localhost:4000/courses").then((response) => {
+      await axios.get("http://localhost:4000/courses").then((response) => {
         setCourses((prevState) => (prevState = response.data));
         setLoading((prevState) => (prevState = false));
       });
     })();
-  }, []);
+  }, [student]);
 
   const fetchStudents = useCallback(async (): Promise<void> => {
     setLoading((prevState) => (prevState = true));
@@ -71,7 +66,7 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
         setStudents((prevState) => (prevState = response.data));
         setLoading((prevState) => (prevState = false));
       });
-  }, []);
+  }, [setStudents]);
 
   const handleCancelAddStudentModal = (): void => {
     setOpenEditStudentModal((prevState) => (prevState = false));
@@ -81,9 +76,9 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
     setLoading((prevState) => (prevState = true));
 
     const response: Students = {
-      name: student?.name,
-      email: student?.email,
-      course: student?.course,
+      name: editStudent?.name,
+      email: editStudent?.email,
+      course: editStudent?.course,
     };
 
     return await axios
@@ -92,7 +87,7 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
         setOpenEditStudentModal((prevState) => (prevState = false));
         setLoading((prevState) => (prevState = false));
 
-        fetchStudents()
+        fetchStudents();
       });
   };
 
@@ -113,14 +108,10 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
                     <input
                       value={editStudent?.name}
                       onChange={(event) =>
-                        setEditStudent(
-                          (prevState) =>
-                            (prevState = {
-                              name: event.target.value,
-                              email: student?.email,
-                              id: student?.id,
-                            })
-                        )
+                        setEditStudent({
+                          ...editStudent,
+                          name: event.target.value,
+                        })
                       }
                       className="rounded-md shadow-sm p-2 bg-green-400"
                     />
@@ -131,14 +122,10 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
                     <input
                       value={editStudent?.email}
                       onChange={(event) =>
-                        setEditStudent(
-                          (prevState) =>
-                            (prevState = {
-                              email: event.target.value,
-                              name: student.name,
-                              id: student?.id,
-                            })
-                        )
+                        setEditStudent({
+                          ...editStudent,
+                          email: event.target.value,
+                        })
                       }
                       className="rounded-md shadow-sm p-2 bg-green-400"
                     />
@@ -147,13 +134,15 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
                   <div className="flex flex-col">
                     <label>Curso</label>
                     <select
-                      value=""
                       defaultValue=""
                       className="rounded-md shadow-sm p-2 bg-green-400"
+                      onChange={(event) =>
+                        setEditStudent({
+                          ...editStudent,
+                          course: event.target.value,
+                        })
+                      }
                     >
-                      <option selected value="">
-                        Selecione
-                      </option>
                       {courses?.map((course, index) => (
                         <Fragment key={index}>
                           <option value={course?.name}>{course?.name}</option>
