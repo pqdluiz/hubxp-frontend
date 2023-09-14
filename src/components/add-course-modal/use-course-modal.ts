@@ -1,5 +1,4 @@
 import type { Course } from "@/interfaces";
-import axios from "axios";
 import { useState, Dispatch, SetStateAction } from "react";
 import type { AddCourseModalViewProps } from "./add-course-modal-view";
 import { CourseService } from "@/services";

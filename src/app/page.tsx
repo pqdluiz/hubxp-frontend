@@ -9,7 +9,8 @@ import {
 } from "@/components";
 import { hubxp } from "@/images";
 import type { Students } from "@/interfaces";
-import axios, { AxiosResponse } from "axios";
+import { StudentsService } from "@/services";
+import type { AxiosResponse } from "axios";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 
@@ -35,8 +36,10 @@ export default function Home() {
     (async function () {
       setLoading((prevState) => (prevState = true));
 
-      await axios
-        .get("http://localhost:4000/students")
+      const studentService = new StudentsService();
+
+      await studentService
+        .findAllStudents()
         .then((response: AxiosResponse<Students[]>) => {
           setStudents((prevState) => (prevState = response.data));
           setLoading((prevState) => (prevState = false));

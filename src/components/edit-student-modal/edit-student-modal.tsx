@@ -24,7 +24,6 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
     handleSubmitAddStudentModal,
     courses,
     loading,
-    setEditStudent,
     editStudent,
     handleChangeCourse,
     handleChangeEmail,
