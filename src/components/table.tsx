@@ -108,7 +108,9 @@ export const Table: NextPage<TableProps> = ({
                           </td>
                           <td className="whitespace-nowrap px-6 py-4 flex">
                             <div
-                              onClick={() => handleExcludesStudent(student?.id)}
+                              onClick={() =>
+                                handleExcludesStudent(String(student.id))
+                              }
                               className="cursor-pointer"
                             >
                               <BsFillTrash3Fill />

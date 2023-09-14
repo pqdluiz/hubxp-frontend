@@ -1,17 +1,10 @@
 "use client";
 
-import type { NextPage } from "next";
-import {
-  Dispatch,
-  SetStateAction,
-  Fragment,
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
-import axios, { AxiosResponse } from "axios";
-import { Loading } from "./loading";
-import type { Course, Students } from "@/interfaces";
+import type { GetServerSideProps, NextPage } from "next";
+import { Dispatch, SetStateAction, Fragment } from "react";
+import { Loading } from "../loading";
+import type { Students } from "@/interfaces";
+import { useAddStudentModal } from "./use-add-student-modal";
 
 interface AddStudentModalProps {
   openAddStudentModal: boolean;
@@ -24,53 +17,14 @@ export const AddStudentModal: NextPage<AddStudentModalProps> = ({
   setOpenAddStudentModal,
   setStudents,
 }) => {
-  const [student, setStudent] = useState<Students>({
-    email: "",
-    id: "",
-    name: "",
-    course: "",
-  });
-
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    (async function () {
-      setLoading((prevState) => (prevState = true));
-
-      await axios.get("http://localhost:4000/courses").then((response) => {
-        setCourses((prevState) => (prevState = response.data));
-        setLoading((prevState) => (prevState = false));
-      });
-    })();
-  }, []);
-
-  const fetchStudents = useCallback(async (): Promise<void> => {
-    setLoading((prevState) => (prevState = true));
-
-    await axios
-      .get("http://localhost:4000/students")
-      .then((response: AxiosResponse<Students[]>) => {
-        setStudents((prevState) => (prevState = response.data));
-        setLoading((prevState) => (prevState = false));
-      });
-  }, []);
-
-  const handleCancelAddStudentModal = (): void => {
-    setOpenAddStudentModal((prevState) => (prevState = false));
-  };
-
-  const handleSubmitAddStudentModal = async (): Promise<void> => {
-    setLoading((prevState) => (prevState = true));
-
-    return await axios
-      .post("http://localhost:4000/students", student)
-      .then(() => {
-        setOpenAddStudentModal((prevState) => (prevState = false));
-        setLoading((prevState) => (prevState = false));
-        fetchStudents();
-      });
-  };
+  const {
+    handleCancelAddStudentModal,
+    handleSubmitAddStudentModal,
+    loading,
+    setStudent,
+    student,
+    courses,
+  } = useAddStudentModal();
 
   return (
     <Fragment>
@@ -137,13 +91,20 @@ export const AddStudentModal: NextPage<AddStudentModalProps> = ({
               </div>
               <div className="text-center md:text-right mt-4 md:flex md:justify-end">
                 <button
-                  onClick={handleSubmitAddStudentModal}
+                  onClick={() =>
+                    handleSubmitAddStudentModal(
+                      setOpenAddStudentModal,
+                      setStudents
+                    )
+                  }
                   className="block w-full md:inline-block md:w-auto px-4 py-3 md:py-2 bg-green-500 text-white rounded-lg font-semibold text-sm md:ml-2 md:order-2"
                 >
                   Salvar
                 </button>
                 <button
-                  onClick={handleCancelAddStudentModal}
+                  onClick={() =>
+                    handleCancelAddStudentModal(setOpenAddStudentModal)
+                  }
                   className="block w-full md:inline-block md:w-auto px-4 py-3 md:py-2 bg-gray-200 rounded-lg font-semibold text-sm mt-4
         md:mt-0 md:order-1"
                 >
@@ -156,4 +117,8 @@ export const AddStudentModal: NextPage<AddStudentModalProps> = ({
       ) : null}
     </Fragment>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  return { props: {} };
 };
