@@ -74,6 +74,33 @@ export function useAddStudentModal(): AddStudentModalViewProps {
       });
   };
 
+  const handleChangeName = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    setStudent({
+      ...student,
+      name: event.target.value,
+    });
+  };
+
+  const handleChangeEmail = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ): void => {
+    setStudent({
+      ...student,
+      email: event.target.value,
+    });
+  };
+
+  const handleChangeCourse = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ): void => {
+    setStudent({
+      ...student,
+      course: event.target.value,
+    });
+  };
+
   return {
     handleCancelAddStudentModal,
     handleSubmitAddStudentModal,
@@ -82,5 +109,8 @@ export function useAddStudentModal(): AddStudentModalViewProps {
     student,
     courses,
     fetchStudents,
+    handleChangeCourse,
+    handleChangeEmail,
+    handleChangeName,
   };
 }

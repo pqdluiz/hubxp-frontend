@@ -1,6 +1,6 @@
 "use client";
 
-import type { GetServerSideProps, NextPage } from "next";
+import type { NextPage } from "next";
 import { Dispatch, SetStateAction, Fragment } from "react";
 import { Loading } from "../loading";
 import type { Students } from "@/interfaces";
@@ -21,9 +21,11 @@ export const AddStudentModal: NextPage<AddStudentModalProps> = ({
     handleCancelAddStudentModal,
     handleSubmitAddStudentModal,
     loading,
-    setStudent,
     student,
     courses,
+    handleChangeCourse,
+    handleChangeEmail,
+    handleChangeName,
   } = useAddStudentModal();
 
   return (
@@ -42,16 +44,7 @@ export const AddStudentModal: NextPage<AddStudentModalProps> = ({
                     <label>Nome</label>
                     <input
                       value={student?.name}
-                      onChange={(event) =>
-                        setStudent(
-                          (prevState) =>
-                            (prevState = {
-                              name: event.target.value,
-                              email: student?.email,
-                              id: student?.id,
-                            })
-                        )
-                      }
+                      onChange={handleChangeName}
                       className="rounded-md shadow-sm p-2 bg-green-400"
                     />
                   </div>
@@ -60,23 +53,17 @@ export const AddStudentModal: NextPage<AddStudentModalProps> = ({
                     <label>Email</label>
                     <input
                       value={student?.email}
-                      onChange={(event) =>
-                        setStudent(
-                          (prevState) =>
-                            (prevState = {
-                              email: event.target.value,
-                              name: student.name,
-                              id: student?.id,
-                            })
-                        )
-                      }
+                      onChange={handleChangeEmail}
                       className="rounded-md shadow-sm p-2 bg-green-400"
                     />
                   </div>
 
                   <div className="flex flex-col">
                     <label>Curso</label>
-                    <select className="rounded-md shadow-sm p-2 bg-green-400">
+                    <select
+                      onChange={handleChangeCourse}
+                      className="rounded-md shadow-sm p-2 bg-green-400"
+                    >
                       <option selected value="">
                         Selecione
                       </option>
@@ -117,8 +104,4 @@ export const AddStudentModal: NextPage<AddStudentModalProps> = ({
       ) : null}
     </Fragment>
   );
-};
-
-export const getServerSideProps: GetServerSideProps = async (context) => {
-  return { props: {} };
 };

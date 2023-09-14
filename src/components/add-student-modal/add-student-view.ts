@@ -16,4 +16,7 @@ export interface AddStudentModalViewProps {
   fetchStudents: (
     setStudents: Dispatch<SetStateAction<Students[]>>
   ) => Promise<void>;
+  handleChangeEmail: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChangeName: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChangeCourse: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 }
