@@ -64,15 +64,16 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
                   <div className="flex flex-col">
                     <label>Curso</label>
                     <select
-                      defaultValue=""
+                      defaultValue={student?.course}
                       className="rounded-md shadow-sm p-2 bg-green-400"
                       onChange={handleChangeCourse}
                     >
+                      <option selected value={student?.course}>
+                        {student?.course}
+                      </option>
+
                       {courses?.map((course, index) => (
                         <Fragment key={index}>
-                          <option selected value={student?.course}>
-                            {student?.course}
-                          </option>
                           <option value={course?.name}>{course?.name}</option>
                         </Fragment>
                       ))}
