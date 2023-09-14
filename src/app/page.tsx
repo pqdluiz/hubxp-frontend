@@ -1,8 +1,13 @@
 "use client";
 
-import { AddStudentModal, AddCourseModal } from "@/components";
-import { Loading } from "@/components/loading";
-import { Table } from "@/components/table";
+import {
+  AddStudentModal,
+  AddCourseModal,
+  Table,
+  ExcludesModal,
+  EditStudentModal,
+  Loading,
+} from "@/components";
 import { hubxp } from "@/images";
 import axios, { AxiosResponse } from "axios";
 import Image from "next/image";
@@ -15,12 +20,29 @@ interface Students {
   id: string;
 }
 
+interface Courses {
+  name: string;
+  id?: string;
+}
+
 export default function Home() {
   const [openAddStudentModal, setOpenAddStudentModal] =
     useState<boolean>(false);
   const [openAddCourseModal, setOpenAddCourseModal] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false);
   const [students, setStudents] = useState<Students[]>([]);
+
+  const [openExcludesModal, setOpenExcludesModal] = useState<boolean>(false);
+  const [openEditModal, setOpenEditModal] = useState<boolean>(false);
+  const [editStudent, setEditStudent] = useState<Students>({
+    email: "",
+    id: "",
+    name: "",
+    course: "",
+  });
+
+  const [courses, setCourses] = useState<Courses[]>([]);
+  const [studentId, setStudentId] = useState<string>("");
 
   useEffect(() => {
     (async function () {
@@ -34,8 +56,6 @@ export default function Home() {
         });
     })();
   }, []);
-
-  console.log("prev", students)
 
   const handleAddStudent = (): void => {
     setOpenAddStudentModal((prevState) => (prevState = true));
@@ -59,6 +79,22 @@ export default function Home() {
         setOpenAddCourseModal={setOpenAddCourseModal}
       />
 
+      <ExcludesModal
+        openExcludesModal={openExcludesModal}
+        setOpenExcludesModal={setOpenExcludesModal}
+        studentId={studentId}
+        students={students}
+        setStudents={setStudents}
+      />
+
+      <EditStudentModal
+        openEditStudentModal={openEditModal}
+        setOpenEditStudentModal={setOpenEditModal}
+        student={editStudent}
+        students={students}
+        setStudents={setStudents}
+      />
+
       <header className="flex justify-between bg-black_500">
         <Image src={hubxp} height={100} width={100} alt="Logo do HUB XP" />
       </header>
@@ -79,7 +115,14 @@ export default function Home() {
         </button>
       </section>
 
-      <Table students={students} setStudents={setStudents} />
+      <Table
+        students={students}
+        setStudents={setStudents}
+        setStudentId={setStudentId}
+        setOpenExcludesModal={setOpenExcludesModal}
+        setEditStudent={setEditStudent}
+        setOpenEditModal={setOpenEditModal}
+      />
 
       <footer className="bg-black_500 p-10">
         <p className="text-white">Desenvolvido por Luiz Lima</p>

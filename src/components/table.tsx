@@ -1,10 +1,9 @@
 "use client";
 
-import { NextPage } from "next";
+import type { NextPage } from "next";
 import { useState, useEffect, Fragment } from "react";
 import axios, { AxiosResponse } from "axios";
 import { BsFillTrash3Fill, BsFillPencilFill } from "react-icons/bs";
-import { EditStudentModal, ExcludesModal } from ".";
 import { Loading } from "./loading";
 
 import type { Dispatch, SetStateAction } from "react";
@@ -19,19 +18,21 @@ interface Students {
 interface TableProps {
   students: Students[];
   setStudents: Dispatch<SetStateAction<Students[]>>;
+  setStudentId: Dispatch<SetStateAction<string>>;
+  setOpenExcludesModal: Dispatch<SetStateAction<boolean>>;
+  setEditStudent: Dispatch<SetStateAction<Students>>;
+  setOpenEditModal: Dispatch<SetStateAction<boolean>>;
 }
 
-export const Table: NextPage<TableProps> = ({ students, setStudents }) => {
-  const [openExcludesModal, setOpenExcludesModal] = useState<boolean>(false);
-  const [openEditModal, setOpenEditModal] = useState<boolean>(false);
-  const [studentId, setStudentId] = useState<string>("");
+export const Table: NextPage<TableProps> = ({
+  students,
+  setStudents,
+  setStudentId,
+  setOpenExcludesModal,
+  setEditStudent,
+  setOpenEditModal,
+}) => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [editStudent, setEditStudent] = useState<Students>({
-    email: "",
-    id: "",
-    name: "",
-    course: "",
-  });
 
   useEffect(() => {
     (async function () {
@@ -67,22 +68,6 @@ export const Table: NextPage<TableProps> = ({ students, setStudents }) => {
 
   return (
     <Fragment>
-      <ExcludesModal
-        openExcludesModal={openExcludesModal}
-        setOpenExcludesModal={setOpenExcludesModal}
-        studentId={studentId}
-        students={students}
-        setStudents={setStudents}
-      />
-
-      <EditStudentModal
-        openEditStudentModal={openEditModal}
-        setOpenEditStudentModal={setOpenEditModal}
-        student={editStudent}
-        students={students}
-        setStudents={setStudents}
-      />
-
       <Loading loading={loading} />
 
       <section className="flex mx-5 my-10 justify-evenly shadow-md p-10">
