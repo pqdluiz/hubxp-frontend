@@ -1,14 +1,23 @@
 "use client";
 
 import { NextPage } from "next";
-import { Dispatch, SetStateAction, Fragment, useState, useEffect } from "react";
-import axios from "axios";
+import {
+  Dispatch,
+  SetStateAction,
+  Fragment,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import axios, { AxiosResponse } from "axios";
 import { Loading } from "./loading";
 
 interface AddStudentModalProps {
   openEditStudentModal: boolean;
   setOpenEditStudentModal: Dispatch<SetStateAction<boolean>>;
   student: Students;
+  students: Students[];
+  setStudents: Dispatch<SetStateAction<Students[]>>;
 }
 
 interface Students {
@@ -27,6 +36,8 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
   openEditStudentModal,
   setOpenEditStudentModal,
   student,
+  setStudents,
+  students
 }) => {
   const [editStudent, setEditStudent] = useState<Students>({
     email: "",
@@ -53,13 +64,24 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
     })();
   }, []);
 
+  const fetchStudents = useCallback(async (): Promise<void> => {
+    setLoading((prevState) => (prevState = true));
+
+    await axios
+      .get("http://localhost:4000/students")
+      .then((response: AxiosResponse<Students[]>) => {
+        setStudents((prevState) => (prevState = response.data));
+        setLoading((prevState) => (prevState = false));
+      });
+  }, []);
+
   const handleCancelAddStudentModal = (): void => {
     setOpenEditStudentModal((prevState) => (prevState = false));
   };
 
   const handleSubmitAddStudentModal = async (id: string): Promise<void> => {
     setLoading((prevState) => (prevState = true));
-    
+
     const response: Students = {
       name: student?.name,
       email: student?.email,
@@ -71,6 +93,8 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
       .then(() => {
         setOpenEditStudentModal((prevState) => (prevState = false));
         setLoading((prevState) => (prevState = false));
+
+        fetchStudents()
       });
   };
 

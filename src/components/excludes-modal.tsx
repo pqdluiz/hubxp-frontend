@@ -1,29 +1,53 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { NextPage } from "next";
-import { Fragment, Dispatch, SetStateAction, useState } from "react"
+import { Fragment, Dispatch, SetStateAction, useState, useCallback } from "react";
 import { Loading } from "./loading";
 
+interface Students {
+  name: string;
+  email: string;
+  id?: string;
+  course?: string;
+}
+
 interface ExcludesModalProps {
-  openExcludesModal: boolean 
-  setOpenExcludesModal: Dispatch<SetStateAction<boolean>>
-  studentId: string
+  openExcludesModal: boolean;
+  setOpenExcludesModal: Dispatch<SetStateAction<boolean>>;
+  studentId: string;
+  students: Students[];
+  setStudents: Dispatch<SetStateAction<Students[]>>;
 }
 
 export const ExcludesModal: NextPage<ExcludesModalProps> = ({
   openExcludesModal,
   setOpenExcludesModal,
-  studentId
+  studentId,
+  setStudents,
+  students
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const handleExcludesStudent = (id: string) => {
+  const fetchStudents = useCallback(async (): Promise<void> => {
     setLoading((prevState) => (prevState = true));
 
-    axios.delete("http://localhost:4000/students/" + id).then(() => {
-      setOpenExcludesModal((prevState) => (prevState = false))
+    await axios
+      .get("http://localhost:4000/students")
+      .then((response: AxiosResponse<Students[]>) => {
+        setStudents((prevState) => (prevState = response.data));
+        setLoading((prevState) => (prevState = false));
+      });
+  }, []);
+
+  const handleExcludesStudent = async (id: string): Promise<void> => {
+    setLoading((prevState) => (prevState = true));
+
+    await axios.delete("http://localhost:4000/students/" + id).then(() => {
+      setOpenExcludesModal((prevState) => (prevState = false));
       setLoading((prevState) => (prevState = false));
-    })
-  }
+
+      fetchStudents()
+    });
+  };
 
   return (
     <Fragment>

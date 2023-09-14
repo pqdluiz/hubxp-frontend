@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 import { Dispatch, SetStateAction, Fragment, useState } from "react";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { Loading } from "./loading";
 
 interface AddCourseModalProps {
@@ -24,12 +24,12 @@ export const AddCourseModal: NextPage<AddCourseModalProps> = ({
     setOpenAddCourseModal((prevState) => (prevState = false));
   };
 
-  const handleSubmitAddCouseModal = async () => {
+  const handleSubmitAddCouseModal = async (): Promise<void> => {
     setLoading((prevState) => (prevState = true));
 
-    delete course.id
+    delete course.id;
 
-    return await axios.post("http://localhost:4000/courses", course).then(() => {
+    await axios.post("http://localhost:4000/courses", course).then(() => {
       setOpenAddCourseModal((prevState) => (prevState = false));
       setLoading((prevState) => (prevState = false));
     });

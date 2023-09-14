@@ -1,13 +1,22 @@
 "use client";
 
 import { NextPage } from "next";
-import { Dispatch, SetStateAction, Fragment, useState, useEffect } from "react";
-import axios from "axios";
+import {
+  Dispatch,
+  SetStateAction,
+  Fragment,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import axios, { AxiosResponse } from "axios";
 import { Loading } from "./loading";
 
 interface AddStudentModalProps {
   openAddStudentModal: boolean;
   setOpenAddStudentModal: Dispatch<SetStateAction<boolean>>;
+  students: Students[];
+  setStudents: Dispatch<SetStateAction<Students[]>>;
 }
 
 interface Students {
@@ -25,6 +34,8 @@ interface Courses {
 export const AddStudentModal: NextPage<AddStudentModalProps> = ({
   openAddStudentModal,
   setOpenAddStudentModal,
+  setStudents,
+  students,
 }) => {
   const [student, setStudent] = useState<Students>({
     email: "",
@@ -40,11 +51,22 @@ export const AddStudentModal: NextPage<AddStudentModalProps> = ({
     (async function () {
       setLoading((prevState) => (prevState = true));
 
-      axios.get("http://localhost:4000/courses").then((response) => {
+      await axios.get("http://localhost:4000/courses").then((response) => {
         setCourses((prevState) => (prevState = response.data));
         setLoading((prevState) => (prevState = false));
       });
     })();
+  }, []);
+
+  const fetchStudents = useCallback(async (): Promise<void> => {
+    setLoading((prevState) => (prevState = true));
+
+    await axios
+      .get("http://localhost:4000/students")
+      .then((response: AxiosResponse<Students[]>) => {
+        setStudents((prevState) => (prevState = response.data));
+        setLoading((prevState) => (prevState = false));
+      });
   }, []);
 
   const handleCancelAddStudentModal = (): void => {
@@ -59,6 +81,7 @@ export const AddStudentModal: NextPage<AddStudentModalProps> = ({
       .then(() => {
         setOpenAddStudentModal((prevState) => (prevState = false));
         setLoading((prevState) => (prevState = false));
+        fetchStudents();
       });
   };
 

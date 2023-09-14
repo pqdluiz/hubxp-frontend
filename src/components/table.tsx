@@ -7,6 +7,8 @@ import { BsFillTrash3Fill, BsFillPencilFill } from "react-icons/bs";
 import { EditStudentModal, ExcludesModal } from ".";
 import { Loading } from "./loading";
 
+import type { Dispatch, SetStateAction } from "react";
+
 interface Students {
   name: string;
   email: string;
@@ -14,8 +16,12 @@ interface Students {
   id: string;
 }
 
-export const Table: NextPage = () => {
-  const [students, setStudents] = useState<Students[]>([]);
+interface TableProps {
+  students: Students[];
+  setStudents: Dispatch<SetStateAction<Students[]>>;
+}
+
+export const Table: NextPage<TableProps> = ({ students, setStudents }) => {
   const [openExcludesModal, setOpenExcludesModal] = useState<boolean>(false);
   const [openEditModal, setOpenEditModal] = useState<boolean>(false);
   const [studentId, setStudentId] = useState<string>("");
@@ -47,7 +53,7 @@ export const Table: NextPage = () => {
 
   const handleEditStudent = async (student: Students) => {
     setEditStudent((prevState) => (prevState = student));
-    setLoading(prevState => prevState = true)
+    setLoading((prevState) => (prevState = true));
 
     await axios
       .get("http://localhost:4000/students/" + student?.id)
@@ -65,12 +71,16 @@ export const Table: NextPage = () => {
         openExcludesModal={openExcludesModal}
         setOpenExcludesModal={setOpenExcludesModal}
         studentId={studentId}
+        students={students}
+        setStudents={setStudents}
       />
 
       <EditStudentModal
         openEditStudentModal={openEditModal}
         setOpenEditStudentModal={setOpenEditModal}
         student={editStudent}
+        students={students}
+        setStudents={setStudents}
       />
 
       <Loading loading={loading} />
