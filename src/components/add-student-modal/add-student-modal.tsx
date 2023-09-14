@@ -52,6 +52,7 @@ export const AddStudentModal: NextPage<AddStudentModalProps> = ({
                   <div className="flex flex-col">
                     <label>Email</label>
                     <input
+                      type="email"
                       value={student?.email}
                       onChange={handleChangeEmail}
                       className="rounded-md shadow-sm p-2 bg-green-400"
