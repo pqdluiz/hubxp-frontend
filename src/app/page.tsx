@@ -6,24 +6,12 @@ import {
   Table,
   ExcludesModal,
   EditStudentModal,
-  Loading,
 } from "@/components";
 import { hubxp } from "@/images";
+import type { Students } from "@/interfaces";
 import axios, { AxiosResponse } from "axios";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-
-interface Students {
-  name: string;
-  email: string;
-  course?: string;
-  id: string;
-}
-
-interface Courses {
-  name: string;
-  id?: string;
-}
 
 export default function Home() {
   const [openAddStudentModal, setOpenAddStudentModal] =
@@ -41,7 +29,6 @@ export default function Home() {
     course: "",
   });
 
-  const [courses, setCourses] = useState<Courses[]>([]);
   const [studentId, setStudentId] = useState<string>("");
 
   useEffect(() => {
@@ -70,7 +57,6 @@ export default function Home() {
       <AddStudentModal
         setOpenAddStudentModal={setOpenAddStudentModal}
         openAddStudentModal={openAddStudentModal}
-        students={students}
         setStudents={setStudents}
       />
 
@@ -83,7 +69,6 @@ export default function Home() {
         openExcludesModal={openExcludesModal}
         setOpenExcludesModal={setOpenExcludesModal}
         studentId={studentId}
-        students={students}
         setStudents={setStudents}
       />
 
@@ -91,7 +76,6 @@ export default function Home() {
         openEditStudentModal={openEditModal}
         setOpenEditStudentModal={setOpenEditModal}
         student={editStudent}
-        students={students}
         setStudents={setStudents}
       />
 

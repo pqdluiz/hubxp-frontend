@@ -7,13 +7,7 @@ import { BsFillTrash3Fill, BsFillPencilFill } from "react-icons/bs";
 import { Loading } from "./loading";
 
 import type { Dispatch, SetStateAction } from "react";
-
-interface Students {
-  name: string;
-  email: string;
-  course?: string;
-  id: string;
-}
+import type { Students } from "@/interfaces";
 
 interface TableProps {
   students: Students[];

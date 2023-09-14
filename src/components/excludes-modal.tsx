@@ -14,7 +14,6 @@ interface ExcludesModalProps {
   openExcludesModal: boolean;
   setOpenExcludesModal: Dispatch<SetStateAction<boolean>>;
   studentId: string;
-  students: Students[];
   setStudents: Dispatch<SetStateAction<Students[]>>;
 }
 
@@ -23,7 +22,6 @@ export const ExcludesModal: NextPage<ExcludesModalProps> = ({
   setOpenExcludesModal,
   studentId,
   setStudents,
-  students
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
 

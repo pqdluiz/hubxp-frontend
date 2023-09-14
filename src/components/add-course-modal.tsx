@@ -1,16 +1,12 @@
 import type { NextPage } from "next";
 import { Dispatch, SetStateAction, Fragment, useState } from "react";
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import { Loading } from "./loading";
+import { Course } from "@/interfaces";
 
 interface AddCourseModalProps {
   openAddCourseModal: boolean;
   setOpenAddCourseModal: Dispatch<SetStateAction<boolean>>;
-}
-
-interface Course {
-  name: string;
-  id?: string;
 }
 
 export const AddCourseModal: NextPage<AddCourseModalProps> = ({

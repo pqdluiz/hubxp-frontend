@@ -1,6 +1,6 @@
 "use client";
 
-import { NextPage } from "next";
+import type { NextPage } from "next";
 import {
   Dispatch,
   SetStateAction,
@@ -11,31 +11,18 @@ import {
 } from "react";
 import axios, { AxiosResponse } from "axios";
 import { Loading } from "./loading";
+import type { Course, Students } from "@/interfaces";
 
 interface AddStudentModalProps {
   openAddStudentModal: boolean;
   setOpenAddStudentModal: Dispatch<SetStateAction<boolean>>;
-  students: Students[];
   setStudents: Dispatch<SetStateAction<Students[]>>;
-}
-
-interface Students {
-  name: string;
-  email: string;
-  id?: string;
-  course?: string;
-}
-
-interface Courses {
-  name: string;
-  id?: string;
 }
 
 export const AddStudentModal: NextPage<AddStudentModalProps> = ({
   openAddStudentModal,
   setOpenAddStudentModal,
   setStudents,
-  students,
 }) => {
   const [student, setStudent] = useState<Students>({
     email: "",
@@ -44,7 +31,7 @@ export const AddStudentModal: NextPage<AddStudentModalProps> = ({
     course: "",
   });
 
-  const [courses, setCourses] = useState<Courses[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -107,6 +94,7 @@ export const AddStudentModal: NextPage<AddStudentModalProps> = ({
                             (prevState = {
                               name: event.target.value,
                               email: student?.email,
+                              id: student?.id,
                             })
                         )
                       }
@@ -124,6 +112,7 @@ export const AddStudentModal: NextPage<AddStudentModalProps> = ({
                             (prevState = {
                               email: event.target.value,
                               name: student.name,
+                              id: student?.id,
                             })
                         )
                       }

@@ -16,7 +16,6 @@ interface AddStudentModalProps {
   openEditStudentModal: boolean;
   setOpenEditStudentModal: Dispatch<SetStateAction<boolean>>;
   student: Students;
-  students: Students[];
   setStudents: Dispatch<SetStateAction<Students[]>>;
 }
 
@@ -37,7 +36,6 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
   setOpenEditStudentModal,
   student,
   setStudents,
-  students
 }) => {
   const [editStudent, setEditStudent] = useState<Students>({
     email: "",
