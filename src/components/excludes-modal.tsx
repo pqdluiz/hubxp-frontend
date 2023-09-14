@@ -34,7 +34,7 @@ export const ExcludesModal: NextPage<ExcludesModalProps> = ({
         setStudents((prevState) => (prevState = response.data));
         setLoading((prevState) => (prevState = false));
       });
-  }, []);
+  }, [setStudents]);
 
   const handleExcludesStudent = async (id: string): Promise<void> => {
     setLoading((prevState) => (prevState = true));

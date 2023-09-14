@@ -1,17 +1,10 @@
 "use client";
 
 import { NextPage } from "next";
-import {
-  Dispatch,
-  SetStateAction,
-  Fragment,
-  useState,
-  useEffect,
-  useCallback,
-} from "react";
-import axios, { AxiosResponse } from "axios";
-import { Loading } from "./loading";
-import { Course, Students } from "@/interfaces";
+import { Dispatch, SetStateAction, Fragment } from "react";
+import { Loading } from "../loading";
+import type { Students } from "@/interfaces";
+import { useEditStudentModal } from "./use-edit-student-modal";
 
 interface AddStudentModalProps {
   openEditStudentModal: boolean;
@@ -26,70 +19,14 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
   student,
   setStudents,
 }) => {
-  const [editStudent, setEditStudent] = useState<Students>(student);
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-
-  useEffect(() => {
-    setEditStudent((prevState) => (prevState = student));
-  }, [student]);
-
-  useEffect(() => {
-    if (student?.id) {
-      axios
-        .get("http://localhost:4000/students/" + student?.id)
-        .then((response) => {
-          setEditStudent((prevState) => (prevState = response.data));
-          setLoading((prevState) => (prevState = false));
-        });
-    }
-  }, [student?.id]);
-
-  useEffect(() => {
-    (async function () {
-      setLoading((prevState) => (prevState = true));
-      setEditStudent((prevState) => (prevState = student));
-
-      await axios.get("http://localhost:4000/courses").then((response) => {
-        setCourses((prevState) => (prevState = response.data));
-        setLoading((prevState) => (prevState = false));
-      });
-    })();
-  }, [student]);
-
-  const fetchStudents = useCallback(async (): Promise<void> => {
-    setLoading((prevState) => (prevState = true));
-
-    await axios
-      .get("http://localhost:4000/students")
-      .then((response: AxiosResponse<Students[]>) => {
-        setStudents((prevState) => (prevState = response.data));
-        setLoading((prevState) => (prevState = false));
-      });
-  }, [setStudents]);
-
-  const handleCancelAddStudentModal = (): void => {
-    setOpenEditStudentModal((prevState) => (prevState = false));
-  };
-
-  const handleSubmitAddStudentModal = async (id: string): Promise<void> => {
-    setLoading((prevState) => (prevState = true));
-
-    const response: Students = {
-      name: editStudent?.name,
-      email: editStudent?.email,
-      course: editStudent?.course,
-    };
-
-    return await axios
-      .put("http://localhost:4000/students/" + id, response)
-      .then(() => {
-        setOpenEditStudentModal((prevState) => (prevState = false));
-        setLoading((prevState) => (prevState = false));
-
-        fetchStudents();
-      });
-  };
+  const {
+    handleCancelAddStudentModal,
+    handleSubmitAddStudentModal,
+    courses,
+    loading,
+    setEditStudent,
+    editStudent,
+  } = useEditStudentModal(student);
 
   return (
     <Fragment>
@@ -155,14 +92,20 @@ export const EditStudentModal: NextPage<AddStudentModalProps> = ({
               <div className="text-center md:text-right mt-4 md:flex md:justify-end">
                 <button
                   onClick={() =>
-                    handleSubmitAddStudentModal(String(student.id))
+                    handleSubmitAddStudentModal(
+                      String(student.id),
+                      setOpenEditStudentModal,
+                      setStudents
+                    )
                   }
                   className="block w-full md:inline-block md:w-auto px-4 py-3 md:py-2 bg-green-500 text-white rounded-lg font-semibold text-sm md:ml-2 md:order-2"
                 >
                   Salvar
                 </button>
                 <button
-                  onClick={handleCancelAddStudentModal}
+                  onClick={() =>
+                    handleCancelAddStudentModal(setOpenEditStudentModal)
+                  }
                   className="block w-full md:inline-block md:w-auto px-4 py-3 md:py-2 bg-gray-200 rounded-lg font-semibold text-sm mt-4
         md:mt-0 md:order-1"
                 >

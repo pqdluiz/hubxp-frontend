@@ -1,8 +1,7 @@
 import type { NextPage } from "next";
-import { Dispatch, SetStateAction, Fragment, useState } from "react";
-import axios from "axios";
-import { Loading } from "./loading";
-import { Course } from "@/interfaces";
+import { Dispatch, SetStateAction, Fragment } from "react";
+import { Loading } from "../loading";
+import { useAddCourseModal } from "./use-course-modal";
 
 interface AddCourseModalProps {
   openAddCourseModal: boolean;
@@ -13,23 +12,13 @@ export const AddCourseModal: NextPage<AddCourseModalProps> = ({
   openAddCourseModal,
   setOpenAddCourseModal,
 }) => {
-  const [course, setCourse] = useState<Course>({ id: "", name: "" });
-  const [loading, setLoading] = useState<boolean>(false);
-
-  const handleCancelAddCourseModal = (): void => {
-    setOpenAddCourseModal((prevState) => (prevState = false));
-  };
-
-  const handleSubmitAddCouseModal = async (): Promise<void> => {
-    setLoading((prevState) => (prevState = true));
-
-    delete course.id;
-
-    await axios.post("http://localhost:4000/courses", course).then(() => {
-      setOpenAddCourseModal((prevState) => (prevState = false));
-      setLoading((prevState) => (prevState = false));
-    });
-  };
+  const {
+    handleCancelAddCourseModal,
+    handleSubmitAddCouseModal,
+    loading,
+    setCourse,
+    course,
+  } = useAddCourseModal();
 
   return (
     <Fragment>
@@ -60,13 +49,17 @@ export const AddCourseModal: NextPage<AddCourseModalProps> = ({
               </div>
               <div className="text-center md:text-right mt-4 md:flex md:justify-end">
                 <button
-                  onClick={handleSubmitAddCouseModal}
+                  onClick={() =>
+                    handleSubmitAddCouseModal(setOpenAddCourseModal)
+                  }
                   className="block w-full md:inline-block md:w-auto px-4 py-3 md:py-2 bg-green-500 text-white rounded-lg font-semibold text-sm md:ml-2 md:order-2"
                 >
                   Salvar
                 </button>
                 <button
-                  onClick={handleCancelAddCourseModal}
+                  onClick={() =>
+                    handleCancelAddCourseModal(setOpenAddCourseModal)
+                  }
                   className="block w-full md:inline-block md:w-auto px-4 py-3 md:py-2 bg-gray-200 rounded-lg font-semibold text-sm mt-4
         md:mt-0 md:order-1"
                 >
